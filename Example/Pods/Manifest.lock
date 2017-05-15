@@ -12,16 +12,23 @@ PODS:
     - FBSnapshotTestCase (~> 2.0)
     - Nimble
     - Quick
-  - Quick (1.0.0)
-  - SmartProxy (0.1.0)
+  - Quick (1.1.0)
+  - RFISO8601DateTime (2.0.2)
+  - SmartProxy (0.0.1):
+    - Alamofire (~> 4.4.0)
+    - RFISO8601DateTime (~> 2.0.2)
+    - SwiftyJSON (~> 3.1.4)
+  - SwiftyJSON (3.1.4)
 
 DEPENDENCIES:
-  - Alamofire
+  - Alamofire (~> 4.4.0)
   - FBSnapshotTestCase
   - Nimble (~> 5.1.1)
   - Nimble-Snapshots
-  - Quick (~> 1.0.0)
+  - Quick (~> 1.1.0)
+  - RFISO8601DateTime (~> 2.0.2)
   - SmartProxy (from `../`)
+  - SwiftyJSON (~> 3.1.4)
 
 EXTERNAL SOURCES:
   SmartProxy:
@@ -32,9 +39,11 @@ SPEC CHECKSUMS:
   FBSnapshotTestCase: 094f9f314decbabe373b87cc339bea235a63e07a
   Nimble: 415e3aa3267e7bc2c96b05fa814ddea7bb686a29
   Nimble-Snapshots: e743439f26c2fa99d8f7e0d7c01c99bcb40aa6f2
-  Quick: 8024e4a47e6cc03a9d5245ef0948264fc6d27cff
-  SmartProxy: 79f3363b24e895b854bfeb6ee9017cec31bef4cf
+  Quick: dafc587e21eed9f4cab3249b9f9015b0b7a7f71d
+  RFISO8601DateTime: fb3bab948d06e96a459fd8d230d11e939319ae06
+  SmartProxy: 5db7b510183f4e369dbee00195f8834b4b26b8aa
+  SwiftyJSON: c2842d878f95482ffceec5709abc3d05680c0220
 
-PODFILE CHECKSUM: 6f64a2d1e86e39ae20019c98fbd32af29a81be7c
+PODFILE CHECKSUM: 512eacb797b290acb18286c638bfd0bab5dfb8b1
 
-COCOAPODS: 1.2.0
+COCOAPODS: 1.2.1

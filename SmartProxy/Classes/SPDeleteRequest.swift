@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import SwiftyJSON
 
 open class SPDeleteRequest<TResponse: SPResponse>: SPPostRequest<TResponse> {
 	

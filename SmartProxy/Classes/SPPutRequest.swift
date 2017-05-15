@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import SwiftyJSON
 
 open class SPPutRequest<TResponse: SPResponse>: SPPostRequest<TResponse> {
 	

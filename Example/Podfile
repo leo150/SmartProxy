@@ -1,15 +1,23 @@
 use_frameworks!
 
 target 'SmartProxy_Example' do
-  pod 'SmartProxy', :path => '../'
+	pod 'SmartProxy', :path => '../'
 
-  target 'SmartProxy_Tests' do
-    inherit! :search_paths
+	pod 'SwiftyJSON', '~> 3.1.4'
+	pod 'Alamofire', '~> 4.4.0'
+	pod 'RFISO8601DateTime', '~> 2.0.2'
+	
+	target 'SmartProxy_Tests' do
+		inherit! :search_paths
 
-    pod 'Quick', '~> 1.0.0'
-  pod 'Nimble', '~> 5.1.1'
-  pod 'FBSnapshotTestCase'
-  pod 'Nimble-Snapshots'
-  pod 'Alamofire', '~> 4.4.0'
-  end
+		pod 'Quick', '~> 1.1.0'
+		pod 'Nimble', '~> 5.1.1'
+		pod 'FBSnapshotTestCase'
+		pod 'Nimble-Snapshots'
+	end
 end
+
+#target 'SmartProxy' do
+#	pod 'Alamofire', '~> 4.4.0'
+#	pod 'RFISO8601DateTime'
+#end

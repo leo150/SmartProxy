@@ -19,7 +19,7 @@ open class SPPostRequest<TResponse: SPResponse>: SPRequest<TResponse> {
 		super.init()
 	}
 	
-	open var httpBody : JSON? {
+	open var httpBody: JSON? {
 		get {
 			return nil
 		}
