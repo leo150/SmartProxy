@@ -1,0 +1,6 @@
+framework module SmartProxy {
+  umbrella header "SmartProxy-umbrella.h"
+
+  export *
+  module * { export * }
+}

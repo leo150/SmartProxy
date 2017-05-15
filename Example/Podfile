@@ -10,5 +10,6 @@ target 'SmartProxy_Example' do
   pod 'Nimble', '~> 5.1.1'
   pod 'FBSnapshotTestCase'
   pod 'Nimble-Snapshots'
+  pod 'Alamofire', '~> 4.4.0'
   end
 end
