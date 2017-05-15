@@ -32,9 +32,9 @@ TODO: Add long description of the pod here.
 
   s.source_files = 'SmartProxy/Classes/**/*'
 
-  s.dependency 'Alamofire', '~> 4.4.0'
-  s.dependency 'RFISO8601DateTime', '~> 2.0.2'
-  s.dependency 'SwiftyJSON', '~> 3.1.4'
+  s.dependency 'Alamofire', '~> 4.0'
+  s.dependency 'RFISO8601DateTime', '~> 2.0'
+  s.dependency 'SwiftyJSON', '~> 3.0'
   
   # s.resource_bundles = {
   #   'SmartProxy' => ['SmartProxy/Assets/*.png']
