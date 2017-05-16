@@ -8,6 +8,21 @@
 
 import Foundation
 
+public struct SPLinkBuilderConfiguration {
+	public var host: String = ""
+	public var apiVersion: Int = 1
+	public var debugEnabled: Bool = false
+	
+	public init(host: String = "",
+	            apiVersion: Int = 1,
+	            debugEnabled: Bool = false)
+	{
+		self.host = host
+		self.apiVersion = apiVersion
+		self.debugEnabled = debugEnabled
+	}
+}
+
 open class SPLinkBuilder {
 	
 	public enum Scheme: String {
@@ -15,41 +30,32 @@ open class SPLinkBuilder {
 		case ws = "ws"
 	}
 	
-	public enum ServerType: String {
-		case development = "Development"
-		
-		public var address: String {
-			switch self {
-			case .development:
-				return "plan.rdev.ifrog.ru"
-			}
-		}
-		
-		init(_ value: String) {
-			self = ServerType(rawValue: value) ?? .development
+	public static let shared = SPLinkBuilder()
+	
+	public var configuration = SPLinkBuilderConfiguration() {
+		didSet {
+			urlComponents.host = configuration.host
+			urlComponents.port = configuration.debugEnabled ? 3000 : nil
 		}
 	}
 	
-	open static let sharedInstance = SPLinkBuilder()
-	
-	public let serverType: ServerType = .development
-	public let apiVersion: Int = 1
-	public let isDebugEnabled: Bool = false
 	public var urlComponents: URLComponents
 	
 	private init() {
 		urlComponents = URLComponents()
-		
-		urlComponents.scheme = Scheme.http.rawValue
-		urlComponents.host = ServerType.development.address
-		urlComponents.port = isDebugEnabled ? 3000 : nil
 	}
 	
-	open func build(_ path: String, queryItems: [URLQueryItem]? = nil, api: Bool = true) -> URL? {
-		let apiVersionPath = "/api/v" + "\(apiVersion)"
+	open func build(_ path: String,
+	                scheme: Scheme? = Scheme.http,
+	                queryItems: [URLQueryItem]? = nil,
+	                api: Bool = true) -> URL?
+	{
+		let apiVersionPath = "/api/v" + "\(configuration.apiVersion)"
 		let finalPath = api ? "\(apiVersionPath)/\(path)" : path
 		
+		urlComponents.scheme = scheme?.rawValue
 		urlComponents.queryItems = queryItems
+		
 		var url = urlComponents.url
 		
 		if let componentsUrl = URL(string: finalPath) {
