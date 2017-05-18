@@ -68,4 +68,12 @@ open class SPLinkBuilder {
 		
 		return url
 	}
+	
+	//MARK: Support
+	
+	public var socketCableUrl: URL {
+		urlComponents.scheme = Scheme.ws.rawValue
+		urlComponents.queryItems = nil
+		return urlComponents.url!.appendingPathComponent("cable")
+	}
 }

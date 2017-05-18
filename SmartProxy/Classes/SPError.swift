@@ -14,6 +14,7 @@ public enum SPError: Error {
 	case unexpectedStatusCode(Int)
 	case wrongCredentials
 	case unprocessableEntity(info: String)
+	case unimplemented
 	
 	public init(_ error: Error) {
 		self = error as? SPError ?? .unexpectedFormat("\(error)")
@@ -58,10 +59,8 @@ public enum SPError: Error {
 		case .unprocessableEntity(let info):
 			return info
 			
-		case .unexpectedStatusCode,
-		     .unexpectedFormat:
+		default:
 			return "Internal error. Please try again later."
-			
 		}
 	}
 }
