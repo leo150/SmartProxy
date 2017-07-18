@@ -40,7 +40,7 @@ open class SPRequest <TResponse: SPResponse> {
 		urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
 		urlRequest.setValue("ios", forHTTPHeaderField: "X-Token-Scope")
 		if let accessToken = self.accessToken {
-			urlRequest.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+			urlRequest.setValue("\(accessToken)", forHTTPHeaderField: "X-API-KEY")
 		}
 	}
 	

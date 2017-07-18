@@ -10,7 +10,7 @@ import Foundation
 import Alamofire
 
 public protocol SPParsable: class {
-	init?(data: Any)
+	init(data: Any) throws
 	static func parse(data: Any) throws -> Self
 }
 
@@ -19,18 +19,38 @@ public protocol SPResponsable {
 	            onSuccess: @escaping (SPResponse) -> Void,
 	            onError: @escaping (SPError) -> Void)
 	
-	func processUnprocessableEntity(errorResponse: NSDictionary?,
+	func processUnprocessableEntity(errorResponse: Dictionary<String, Any>?,
 	                                onError: @escaping (SPError) -> Void)
 }
 
-class SPInfo: SPParsable {
-	required init?(data: Any) { }
+open class SPInfo: SPParsable {
+	public required init(data: Any) throws { }
 	
-	static func parse(data: Any) throws -> Self {
-		if let info = self.init(data: data) {
-			return info
+	public static func parse(data: Any) throws -> Self {
+		return try self.init(data: data)
+	}
+	
+	open func produceErrorInfo(_ info: String? = nil,
+	                           file: String = #file,
+	                           line: Int = #line) -> String
+	{
+		return "\(file) at line \(line): \(String(describing: info))"
+	}
+	
+	open func getRequiredField<T>(_ json: Dictionary<String, Any>, _ key: String,
+	                           logIfFail: Bool = false, method: String? = #function,
+	                           file: String? = #file, line: Int = #line) -> T?
+	{
+		guard let value = json[key] as? T else {
+			let errorMsg = "Trying to get value from key \"\(key)\" that not exists. Method: \(String(describing: method)) file: \(String(describing: file)) line: \(line)"
+			print(errorMsg)
+			return nil
 		}
-		throw SPError.unimplemented
+		return value
+	}
+	
+	open func getOptionalField<T>(_ json: Dictionary<String, Any>, _ key: String) -> T? {
+		return json[key] as? T
 	}
 }
 
@@ -43,7 +63,7 @@ open class SPResponse: SPResponsable {
 	                 onError: @escaping (SPError) -> Void)
 	{ }
 	
-	open func processUnprocessableEntity(errorResponse: NSDictionary?,
+	open func processUnprocessableEntity(errorResponse: Dictionary<String, Any>?,
 	                                     onError: @escaping (SPError) -> Void)
 	{
 		if let error = errorResponse?["error"] as? String {
@@ -52,6 +72,29 @@ open class SPResponse: SPResponsable {
 		else {
 			onError(.unexpectedFormat(produceErrorInfo()))
 		}
+	}
+	
+	open func produceErrorInfo(_ info: String? = nil,
+	                             file: String = #file,
+	                             line: Int = #line) -> String
+	{
+		return "\(file) at line \(line): \(String(describing: info))"
+	}
+	
+	open func getRequiredField<T>(_ json: Dictionary<String, Any>, _ key: String,
+	                           logIfFail: Bool = false, method: String? = #function,
+	                           file: String? = #file, line: Int = #line) -> T?
+	{
+		guard let value = json[key] as? T else {
+			let errorMsg = "Trying to get value from key \"\(key)\" that not exists. Method: \(String(describing: method)) file: \(String(describing: file)) line: \(line)"
+			print(errorMsg)
+			return nil
+		}
+		return value
+	}
+	
+	open func getOptionalField<T>(_ json: Dictionary<String, Any>, _ key: String) -> T? {
+		return json[key] as? T
 	}
 }
 
@@ -75,7 +118,7 @@ open class SPDataResponse<I: SPParsable>: SPResponse {
 		switch (statusCode) {
 			
 		case successCode:
-			guard let raw = rawResponse.result.value as? Any else {
+			guard let raw = rawResponse.result.value else {
 				onError(.unexpectedFormat(produceErrorInfo())); return
 			}
 			
