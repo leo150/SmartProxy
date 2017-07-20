@@ -37,7 +37,12 @@ open class SPRequest <TResponse: SPResponse> {
 	
 	public var absoluteUrl: URL? {
 		get {
-			return SPLinkBuilder.shared.build(pathComponents, queryItems: queryItems)
+			if pathComponents.count > 0 {
+				return SPLinkBuilder.shared.build(pathComponents, queryItems: queryItems)
+			}
+			else {
+				return SPLinkBuilder.shared.build(path, queryItems: queryItems)
+			}
 		}
 	}
 	
