@@ -11,18 +11,15 @@ import Foundation
 public struct SPLinkBuilderConfiguration {
 	public var host: String = ""
 	
-	public var apiVersionPath: String? = nil
 	public var apiVersion: Int = 1
 	
 	public var debugPort: Int? = nil
 	
 	public init(host: String = "",
-	            apiVersionPath: String? = nil,
 	            apiVersion: Int = 1,
 	            debugPort: Int? = nil)
 	{
 		self.host = host
-		self.apiVersionPath = apiVersionPath
 		self.apiVersion = apiVersion
 		self.debugPort = debugPort
 	}
