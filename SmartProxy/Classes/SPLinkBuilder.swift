@@ -14,17 +14,17 @@ public struct SPLinkBuilderConfiguration {
 	public var apiVersionPath: String? = nil
 	public var apiVersion: Int = 1
 	
-	public var debugEnabled: Bool = false
+	public var debugPort: Int? = nil
 	
 	public init(host: String = "",
 	            apiVersionPath: String? = nil,
 	            apiVersion: Int = 1,
-	            debugEnabled: Bool = false)
+	            debugPort: Int? = nil)
 	{
 		self.host = host
 		self.apiVersionPath = apiVersionPath
 		self.apiVersion = apiVersion
-		self.debugEnabled = debugEnabled
+		self.debugPort = debugPort
 	}
 }
 
@@ -40,7 +40,7 @@ open class SPLinkBuilder {
 	public var configuration = SPLinkBuilderConfiguration() {
 		didSet {
 			urlComponents.host = configuration.host
-			urlComponents.port = configuration.debugEnabled ? 3000 : nil
+			urlComponents.port = configuration.debugPort
 		}
 	}
 	
