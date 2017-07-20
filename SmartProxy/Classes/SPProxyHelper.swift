@@ -7,7 +7,28 @@
 //
 
 import Foundation
-import RFISO8601DateTime
+import SwiftyJSON
+import Alamofire
+//import RFISO8601DateTime
+
+extension JSON: ParameterEncoding {
+	public func encode(_ urlRequest: URLRequestConvertible, with parameters: Parameters?) throws -> URLRequest {
+		var urlRequest = try urlRequest.asURLRequest()
+		
+		do {
+			urlRequest.httpBody = try rawData()
+		}
+		catch {
+			print("ParameterEncoding: rawData() fail")
+		}
+		
+		if urlRequest.value(forHTTPHeaderField: "Content-Type") == nil {
+			urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
+		}
+		
+		return urlRequest
+	}
+}
 
 //public func produceErrorInfo(_ info: String? = nil, file: String = #file, line: Int = #line) -> String { return "\(file) at line \(line): \(info)"}
 //

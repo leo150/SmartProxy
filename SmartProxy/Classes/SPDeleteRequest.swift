@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Alamofire
 
 open class SPDeleteRequest<TResponse: SPResponse>: SPPostRequest<TResponse> {
 	
@@ -14,13 +15,11 @@ open class SPDeleteRequest<TResponse: SPResponse>: SPPostRequest<TResponse> {
 		super.init()
 	}
 	
-	public override init(withAccessToken accessToken : String) {
+	public override init(withAccessToken accessToken: String) {
 		super.init(withAccessToken: accessToken)
 	}
 	
-	internal override func setupUrlRequest(_ urlRequest : NSMutableURLRequest) {
-		
-		super.setupUrlRequest(urlRequest)
-		urlRequest.httpMethod = "DELETE"
+	open override var method: HTTPMethod {
+		return .delete
 	}
 }

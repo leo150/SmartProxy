@@ -1,5 +1,5 @@
 //
-//  SmartRequestInfo.swift
+//  SPRequestInfo.swift
 //  SMART
 //
 //  Created by Vadim Vnukov on 2/18/16.
@@ -9,18 +9,18 @@
 import Foundation
 import Alamofire
 
-open class SmartRequestInfo {
+open class SPRequestInfo {
 	
-	fileprivate var _request : Request
+	fileprivate var _request: Request
 	
 	//TODO: implement Progress
-	open var progress : Progress {
+	open var progress: Progress {
 		get {
 			return Progress()
 		}
 	}
 	
-	internal init(withAlamofireRequest request : Request) {
+	public init(with request: Request) {
 		self._request = request
 	}
 	

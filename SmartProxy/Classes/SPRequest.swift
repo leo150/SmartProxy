@@ -22,8 +22,13 @@ open class SPRequest <TResponse: SPResponse> {
 		self.accessToken = accessToken
 	}
 	
+	@available(*, deprecated, message: "Use pathComponents instead")
 	open var path: String {
 		return ""
+	}
+	
+	open var pathComponents: [String] {
+		return []
 	}
 	
 	open var queryItems: [URLQueryItem]? {
@@ -36,17 +41,28 @@ open class SPRequest <TResponse: SPResponse> {
 		}
 	}
 	
-	internal func setupUrlRequest(_ urlRequest: NSMutableURLRequest) {
-		urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
-		urlRequest.setValue("ios", forHTTPHeaderField: "X-Token-Scope")
-		if let accessToken = self.accessToken {
-			urlRequest.setValue("\(accessToken)", forHTTPHeaderField: "X-API-KEY")
-		}
+	open var headers: HTTPHeaders? {
+		return [
+		"Content-Type": "application/json",
+		"X-API-KEY": accessToken ?? ""
+		]
+	}
+	
+	open var parameters: Parameters? {
+		return nil
+	}
+	
+	open var encoding: ParameterEncoding {
+		return URLEncoding.default
+	}
+	
+	open var method: HTTPMethod {
+		return .options
 	}
 	
 	open func send(_ onSuccess: @escaping ((TResponse) -> Void),
 	               onError: @escaping ((SPError) -> Void),
-	               onAnyway: @escaping (() -> Void) = { _ in }) -> SmartRequestInfo?
+	               onAnyway: @escaping (() -> Void) = { _ in }) -> SPRequestInfo?
 	{
 		guard let absoluteUrl = absoluteUrl else {
 			onError(.connectionError)
@@ -54,13 +70,12 @@ open class SPRequest <TResponse: SPResponse> {
 			return nil
 		}
 		
-		let urlRequest = NSMutableURLRequest(url: absoluteUrl)
-		self.setupUrlRequest(urlRequest)
+		print("url: \(absoluteUrl)")
 		
-		let url = urlRequest.url!
-		print("url: \(url)")
-		
-		let request = sessionManager.request(urlRequest as URLRequest)
+		let request = sessionManager.request(absoluteUrl,
+		                                     method: method,
+		                                     encoding: encoding,
+		                                     headers: headers)
 			.responseString { response in
 				print("response:")
 				if let value = response.result.value {
@@ -98,7 +113,7 @@ open class SPRequest <TResponse: SPResponse> {
 				
 				onAnyway()
 		}
-		return SmartRequestInfo(withAlamofireRequest: request)
+		return SPRequestInfo(with: request)
 	}
 	
 	fileprivate func saveResponse(text: String) {

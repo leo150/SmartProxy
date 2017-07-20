@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Alamofire
 
 open class SPPutRequest<TResponse: SPResponse>: SPPostRequest<TResponse> {
 	
@@ -18,9 +19,7 @@ open class SPPutRequest<TResponse: SPResponse>: SPPostRequest<TResponse> {
 		super.init(withAccessToken: accessToken)
 	}
 	
-	internal override func setupUrlRequest(_ urlRequest : NSMutableURLRequest) {
-		
-		super.setupUrlRequest(urlRequest)
-		urlRequest.httpMethod = "PUT"
+	open override var method: HTTPMethod {
+		return .put
 	}
 }

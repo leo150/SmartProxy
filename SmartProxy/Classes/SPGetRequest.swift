@@ -8,6 +8,7 @@
 
 import Foundation
 import SwiftyJSON
+import Alamofire
 
 open class SPGetRequest<TResponse: SPResponse>: SPRequest<TResponse> {
 	
@@ -19,25 +20,17 @@ open class SPGetRequest<TResponse: SPResponse>: SPRequest<TResponse> {
 		super.init(withAccessToken: accessToken)
 	}
 	
-	internal var httpBody: JSON? {
+	open var httpBody: JSON? {
 		get {
 			return nil
 		}
 	}
 	
-	internal override func setupUrlRequest(_ urlRequest: NSMutableURLRequest) {
-		
-		super.setupUrlRequest(urlRequest)
-		
-		if let unpackedHttpBody = self.httpBody {
-			do {
-				urlRequest.httpBody = try unpackedHttpBody.rawData()
-			}
-			catch {
-				print("Could not read http body")
-			}
-		}
-		
-		urlRequest.httpMethod = "GET"
+	open override var method: HTTPMethod {
+		return .get
+	}
+	
+	open override var encoding: ParameterEncoding {
+		return httpBody ?? super.encoding
 	}
 }

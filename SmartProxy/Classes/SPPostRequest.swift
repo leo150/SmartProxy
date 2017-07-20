@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Alamofire
 import SwiftyJSON
 
 open class SPPostRequest<TResponse: SPResponse>: SPRequest<TResponse> {
@@ -25,22 +26,11 @@ open class SPPostRequest<TResponse: SPResponse>: SPRequest<TResponse> {
 		}
 	}
 	
-	internal override func setupUrlRequest(_ urlRequest : NSMutableURLRequest) {
-		
-		super.setupUrlRequest(urlRequest)
-		
-		
-		if let unpackedHttpBody = self.httpBody {
-			do {
-				print("unpackedHttpBody: \(unpackedHttpBody)")
-				urlRequest.httpBody = try unpackedHttpBody.rawData()
-			}
-			catch {
-				print("Could not read http body")
-			}
-		}
-		
-		urlRequest.httpMethod = "POST"
-		
+	open override var method: HTTPMethod {
+		return .post
+	}
+	
+	open override var encoding: ParameterEncoding {
+		return httpBody ?? super.encoding
 	}
 }

@@ -10,14 +10,19 @@ import Foundation
 
 public struct SPLinkBuilderConfiguration {
 	public var host: String = ""
+	
+	public var apiVersionPath: String? = nil
 	public var apiVersion: Int = 1
+	
 	public var debugEnabled: Bool = false
 	
 	public init(host: String = "",
+	            apiVersionPath: String? = nil,
 	            apiVersion: Int = 1,
 	            debugEnabled: Bool = false)
 	{
 		self.host = host
+		self.apiVersionPath = apiVersionPath
 		self.apiVersion = apiVersion
 		self.debugEnabled = debugEnabled
 	}
@@ -45,24 +50,35 @@ open class SPLinkBuilder {
 		urlComponents = URLComponents()
 	}
 	
+	@available(*, deprecated)
 	open func build(_ path: String,
 	                scheme: Scheme? = Scheme.http,
 	                queryItems: [URLQueryItem]? = nil,
 	                api: Bool = true) -> URL?
 	{
-		let apiVersionPath = "/api/v" + "\(configuration.apiVersion)"
-		let finalPath = api ? "\(apiVersionPath)/\(path)" : path
-		
+		return self.build(path.components(separatedBy: "/"),
+		                  scheme: scheme,
+		                  queryItems: queryItems)
+	}
+	
+	open func build(_ pathComponents: [String],
+	                scheme: Scheme? = Scheme.http,
+	                queryItems: [URLQueryItem]? = nil) -> URL?
+	{
 		urlComponents.scheme = scheme?.rawValue
 		urlComponents.queryItems = queryItems
 		
 		var url = urlComponents.url
 		
-		if let componentsUrl = URL(string: finalPath) {
-			for component in componentsUrl.pathComponents {
-				if component != "/" {
-					url = url?.appendingPathComponent(component)
-				}
+		for component in pathComponents {
+			if component.characters.count == 0 || component == "/" { continue }
+			
+			if component == "v" {
+				let version = "\(configuration.apiVersion)"
+				url = url?.appendingPathComponent(component + version)
+			}
+			else {
+				url = url?.appendingPathComponent(component)
 			}
 		}
 		
