@@ -13,15 +13,15 @@ public struct SPLinkBuilderConfiguration {
 	
 	public var apiVersion: Int = 1
 	
-	public var debugPort: Int? = nil
+	public var port: Int? = nil
 	
 	public init(host: String = "",
-	            apiVersion: Int = 1,
-	            debugPort: Int? = nil)
+	            port: Int? = nil,
+	            apiVersion: Int = 1)
 	{
 		self.host = host
 		self.apiVersion = apiVersion
-		self.debugPort = debugPort
+		self.port = port
 	}
 }
 
@@ -37,7 +37,7 @@ open class SPLinkBuilder {
 	public var configuration = SPLinkBuilderConfiguration() {
 		didSet {
 			urlComponents.host = configuration.host
-			urlComponents.port = configuration.debugPort
+			urlComponents.port = configuration.port
 		}
 	}
 	
@@ -58,10 +58,23 @@ open class SPLinkBuilder {
 		                  queryItems: queryItems)
 	}
 	
+	/// Builds a URL with provided components.
+	///
+	/// - Parameters:
+	///   - pathComponents: Path components for a URL
+	///   - host: Host for a URL. If nil than host will be taken from `configuration`.
+	///   - port: Port for a URL. If nil than port will be taken from `configuration`.
+	///   - scheme: Scheme for a URL. Default is http.
+	///   - queryItems: Array of query items for this URL, in the order in which they 
+	///     appear in the original query string.
 	open func build(_ pathComponents: [String],
+	                host: String? = nil,
+	                port: Int? = nil,
 	                scheme: Scheme? = Scheme.http,
 	                queryItems: [URLQueryItem]? = nil) -> URL?
 	{
+		urlComponents.host = host ?? configuration.host
+		urlComponents.port = port ?? configuration.port
 		urlComponents.scheme = scheme?.rawValue
 		urlComponents.queryItems = queryItems
 		
