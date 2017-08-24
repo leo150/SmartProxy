@@ -35,7 +35,7 @@ open class SPRequest <TResponse: SPResponse> {
 		return nil
 	}
 	
-	public var absoluteUrl: URL? {
+	open var absoluteUrl: URL? {
 		get {
 			if pathComponents.count > 0 {
 				return SPLinkBuilder.shared.build(pathComponents, queryItems: queryItems)
@@ -65,6 +65,18 @@ open class SPRequest <TResponse: SPResponse> {
 		return .options
 	}
 	
+	open var retryAttempts: Int {
+		return 0
+	}
+	
+	open var retryErrorCodes: [CountableClosedRange<Int>] {
+		return SPConfiguration.shared.retryErrorCodes
+	}
+	
+	open var notRetryErrorCodes: [Int] {
+		return SPConfiguration.shared.notRetryErrorCodes
+	}
+	
 	open func send(_ onSuccess: @escaping ((TResponse) -> Void),
 	               onError: @escaping ((SPError) -> Void),
 	               onAnyway: @escaping (() -> Void) = { _ in }) -> SPRequestInfo?
@@ -77,17 +89,36 @@ open class SPRequest <TResponse: SPResponse> {
 		
 		print("url: \(absoluteUrl)")
 		
+		return send(attempt: 0, onSuccess: onSuccess, onError: onError, onAnyway: onAnyway)
+	}
+	
+	@discardableResult
+	private func send(attempt: Int,
+	                  onSuccess: @escaping ((TResponse) -> Void),
+	                  onError: @escaping ((SPError) -> Void),
+	                  onAnyway: @escaping (() -> Void) = { _ in },
+	                  requestInfo: SPRequestInfo? = nil) -> SPRequestInfo?
+	{
+		guard let absoluteUrl = absoluteUrl else {
+			onError(.connectionError)
+			onAnyway()
+			return nil
+		}
+		
 		let request = sessionManager.request(absoluteUrl,
 		                                     method: method,
 		                                     encoding: encoding,
 		                                     headers: headers)
 			.responseString { response in
-				print("response:")
-				if let value = response.result.value {
-//					print(value)
-				}
-				else {
-					print("empty")
+				
+				if SPConfiguration.shared.printResponse {
+					print("response:")
+					if let value = response.result.value {
+						print(value)
+					}
+					else {
+						print("empty")
+					}
 				}
 				
 				//Simulator only
@@ -100,25 +131,61 @@ open class SPRequest <TResponse: SPResponse> {
 						}
 					}
 				#endif
-			} .responseJSON { response in
-				if let urlError = response.result.error as? URLError {
-					if urlError.errorCode == URLError.Code.cancelled.rawValue {
-						onAnyway()
-						return
-					}
+			}
+			.responseJSON { [weak self] response in
+				guard let sSelf = self else { onAnyway(); return }
+				
+				if
+					let urlError = response.result.error as? URLError,
+					urlError.errorCode == URLError.Code.cancelled.rawValue
+				{
+					onAnyway(); return
 				}
 				
 				let responseParser = TResponse()
 				
-				func onParseSuccess (_ response : SPResponse) {
+				func onParseSuccess (_ response: SPResponse) {
 					onSuccess(response as! TResponse)
 				}
 				
-				responseParser.parse(response, onSuccess : onParseSuccess, onError : onError)
+				func onParseError(_ error: SPError) {
+					if let statusCode = response.response?.statusCode {
+						if attempt >= sSelf.retryAttempts {
+							onError(error)
+						}
+						else if sSelf.notRetryErrorCodes.contains(statusCode) {
+							onError(error)
+						}
+						else {
+							for range in sSelf.retryErrorCodes {
+								if range.contains(statusCode) {
+									sSelf.send(attempt: attempt + 1, onSuccess: onSuccess,
+										onError: onError, onAnyway: onAnyway, requestInfo: requestInfo)
+									return
+								}
+							}
+							
+							onError(error)
+						}
+					}
+					else {
+						onError(error)
+					}
+				}
+				
+				responseParser.parse(response, onSuccess: onParseSuccess, onError: onError)
 				
 				onAnyway()
 		}
-		return SPRequestInfo(with: request)
+		
+		if let requestInfo = requestInfo {
+			requestInfo.updateRequest(request)
+		}
+		else {
+			return SPRequestInfo(with: request)
+		}
+		
+		return nil
 	}
 	
 	fileprivate func saveResponse(text: String) {

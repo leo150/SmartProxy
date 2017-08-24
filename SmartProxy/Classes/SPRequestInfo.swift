@@ -11,7 +11,7 @@ import Alamofire
 
 open class SPRequestInfo {
 	
-	fileprivate var _request: Request
+	public fileprivate(set) var _request: Request
 	
 	//TODO: implement Progress
 	open var progress: Progress {
@@ -38,6 +38,12 @@ open class SPRequestInfo {
 	
 	open func progress(_ closure: ((Int64, Int64, Int64) -> Void)?) {
 		
+	}
+	
+	public func updateRequest(_ request: Request) {
+		_request.cancel()
+		
+		_request = request
 	}
 }
 

@@ -29,6 +29,7 @@ open class SPLinkBuilder {
 	
 	public enum Scheme: String {
 		case http = "http"
+		case https = "https"
 		case ws = "ws"
 	}
 	
