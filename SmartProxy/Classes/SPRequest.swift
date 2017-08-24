@@ -112,6 +112,10 @@ open class SPRequest <TResponse: SPResponse> {
 			.responseString { response in
 				
 				if SPConfiguration.shared.printResponse {
+					if let statusCode = response.response?.statusCode {
+						print("code: \(statusCode)")
+					}
+					
 					print("response:")
 					if let value = response.result.value {
 						print(value)
@@ -129,11 +133,12 @@ open class SPRequest <TResponse: SPResponse> {
 								self.saveResponse(text: resultValue)
 							}
 						}
+						
 					}
 				#endif
 			}
-			.responseJSON { [weak self] response in
-				guard let sSelf = self else { onAnyway(); return }
+			.responseJSON { response in
+				let sSelf = self
 				
 				if
 					let urlError = response.result.error as? URLError,
@@ -173,7 +178,7 @@ open class SPRequest <TResponse: SPResponse> {
 					}
 				}
 				
-				responseParser.parse(response, onSuccess: onParseSuccess, onError: onError)
+				responseParser.parse(response, onSuccess: onParseSuccess, onError: onParseError)
 				
 				onAnyway()
 		}

@@ -9,7 +9,7 @@
 import Foundation
 
 public class SPConfiguration {
-	static let shared = SPConfiguration()
+	public static let shared = SPConfiguration()
 	
 	private init() {}
 	
