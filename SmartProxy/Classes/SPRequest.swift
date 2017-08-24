@@ -66,7 +66,7 @@ open class SPRequest <TResponse: SPResponse> {
 	}
 	
 	open var retryAttempts: Int {
-		return 0
+		return SPConfiguration.shared.retryAttempts
 	}
 	
 	open var retryErrorCodes: [CountableClosedRange<Int>] {

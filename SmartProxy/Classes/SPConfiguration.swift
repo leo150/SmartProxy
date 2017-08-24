@@ -8,10 +8,12 @@
 
 import Foundation
 
-class SPConfiguration {
+public class SPConfiguration {
 	static let shared = SPConfiguration()
 	
 	private init() {}
+	
+	public var retryAttempts: Int = 0
 	
 	public var retryErrorCodes: [CountableClosedRange<Int>] = []
 	
