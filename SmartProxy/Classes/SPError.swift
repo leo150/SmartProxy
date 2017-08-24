@@ -10,7 +10,7 @@ import Foundation
 
 public enum SPError: Error {
 	case connectionError
-	case unexpectedFormat(String)
+	case unexpectedFormat(String?)
 	case unexpectedStatusCode(Int)
 	case wrongCredentials
 	case unprocessableEntity(info: String)
@@ -34,7 +34,7 @@ public enum SPError: Error {
 		resultInfo["errorName"] = "\(self)"
 		switch self {
 		case .unexpectedFormat(let info):
-			resultInfo["error"] = info
+			resultInfo["error"] = info ?? "Internal error. Please try again."
 			
 		case .unexpectedStatusCode(let code):
 			resultInfo["statusCode"] = "\(code)"
