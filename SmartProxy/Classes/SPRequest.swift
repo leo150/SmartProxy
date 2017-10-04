@@ -22,11 +22,6 @@ open class SPRequest <TResponse: SPResponse> {
 		self.accessToken = accessToken
 	}
 	
-	@available(*, deprecated, message: "Use pathComponents instead")
-	open var path: String {
-		return ""
-	}
-	
 	open var pathComponents: [String] {
 		return []
 	}
@@ -36,14 +31,7 @@ open class SPRequest <TResponse: SPResponse> {
 	}
 	
 	open var absoluteUrl: URL? {
-		get {
-			if pathComponents.count > 0 {
-				return SPLinkBuilder.shared.build(pathComponents, queryItems: queryItems)
-			}
-			else {
-				return SPLinkBuilder.shared.build(path, queryItems: queryItems)
-			}
-		}
+		return SPLinkBuilder.shared.build(pathComponents, queryItems: queryItems)
 	}
 	
 	open var headers: HTTPHeaders? {
@@ -79,7 +67,7 @@ open class SPRequest <TResponse: SPResponse> {
 	
 	open func send(_ onSuccess: @escaping ((TResponse) -> Void),
 	               onError: @escaping ((SPError) -> Void),
-	               onAnyway: @escaping (() -> Void) = { _ in }) -> SPRequestInfo?
+	               onAnyway: @escaping (() -> Void) = {  }) -> SPRequestInfo?
 	{
 		guard let absoluteUrl = absoluteUrl else {
 			onError(.connectionError)
@@ -96,7 +84,7 @@ open class SPRequest <TResponse: SPResponse> {
 	private func send(attempt: Int,
 	                  onSuccess: @escaping ((TResponse) -> Void),
 	                  onError: @escaping ((SPError) -> Void),
-	                  onAnyway: @escaping (() -> Void) = { _ in },
+	                  onAnyway: @escaping (() -> Void) = {  },
 	                  requestInfo: SPRequestInfo? = nil) -> SPRequestInfo?
 	{
 		guard let absoluteUrl = absoluteUrl else {

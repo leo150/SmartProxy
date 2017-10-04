@@ -7,8 +7,8 @@
 //
 
 import Foundation
-import SwiftyJSON
 import Alamofire
+import SwiftyJSON
 
 open class SPGetRequest<TResponse: SPResponse>: SPRequest<TResponse> {
 	
